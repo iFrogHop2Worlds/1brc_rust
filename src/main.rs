@@ -2,9 +2,9 @@ use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
 use std::collections::{btree_map, BTreeMap};
-fn calculate_min_max_median(numbers: &Vec<usize>) -> (f32, f32, f32) {
+fn calculate_min_max_median(numbers: &mut Vec<f32>) -> (f32, f32, f32) {
     let mut sorted_numbers = numbers.clone();
-    sorted_numbers.sort();
+    sorted_numbers.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
     let min = *sorted_numbers.first().unwrap();
     let max = *sorted_numbers.last().unwrap();
@@ -35,7 +35,6 @@ fn main() -> io::Result<()> {
                 match v.parse::<f32>() {
                     Ok(num) => {
                         u.push(num);
-                        //println!("{:?}", num);
                     },
                     Err(_) => {
                         println!("Could not parse '{}'", v);
@@ -46,7 +45,6 @@ fn main() -> io::Result<()> {
                 match v.parse::<f32>() {
                     Ok(num) => {
                         stationMap.insert(k.parse().unwrap(), vec![num]);
-                        //println!("{:?}", v.parse::<f32>().unwrap())
                     },
                     Err(_) => {
                         println!("Could not parse '{}'", v);
@@ -57,9 +55,10 @@ fn main() -> io::Result<()> {
         }
 
     }
-    println!("{:?}", stationMap);
+
+    for (_key, value) in stationMap.iter_mut() {
+        let res = calculate_min_max_median(value);
+        println!("{}, {:?}", _key, res);
+    }
     Ok(())
-    // let numbers = vec![5, 2, 9, 3, 7];
-    // let (min, max, median) = calculate_min_max_median(&numbers);
-    // println!("Min: {}, Median: {}, Max: {}", min, median, max);
 }
